@@ -1,14 +1,42 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 int decBinario(int);
 int decHexa(int);
 int decOctal(int);
+int binDecimal(char[]);
 
 int main(){
     int   numero = 0;
     int   opcion = 0;
+    int   fEntrada =0;
+    int   nDB=0;
+    char  nHexa;
+    char  nBinario[50];
+
+    printf("Seleccione el formato de entrada : \n1-DECIMAL\n2-BINARIO\n3-HEXADECIMAL\n");
+    scanf("%d",&fEntrada);
+
+    switch(fEntrada){
+        case 1: //DECIMAL
+            printf("Ingrese el numero decimal : \n");
+            scanf("%d",&nDB);
+            decBinario(nDB);
+            decHexa(nDB);
+            break;
+        case 2: //BINARIO
+            printf("Ingrese el numero binario : \n");
+            scanf("%s",nBinario);
+            printf("Valor ingresado %s \n",nBinario);
+            binDecimal(nBinario);
+            break;
+        case 3: //HEXADECIMAL
+            printf("Ingrese el numero hexadecimal : \n");
+            scanf("%s",nHexa);
+    }
+
 
     printf("Seleccione una de las opciones : \n1-DECIMAL a BINARIO\n2-DECIMAL a HEXADECIMAL\n3-DECIMAL a OCTAL\n");
     scanf("%d",&opcion);
@@ -24,6 +52,27 @@ int main(){
     //numero = 5137;
     //resultado = 155;
     //decOctal(numero);
+}
+
+int binDecimal(char numero[]){
+    int i=0, j=0;
+    char longitud;
+    int nDec=0;
+
+    //OBTENGO EL TAMAÑO DEL VECTOR
+    longitud=strlen(numero);
+
+    //RECORRO EL VECTOR EN INVERSA
+    for(i=longitud-1;i>=0;i--){
+        //SI EL CARACTER ENCONTRADO ES 1, ENTONCES ELEVO 2 A LA POTENCIA DE (LONGITUD-1)-i
+        //QUE ME DEVUELVE NUMEROS CONSECUTIVOS DESDE EL 0
+        if(numero[i]=='1'){
+            nDec+=pow(2,(longitud-1)-i);
+        }
+    }
+
+    //IMPRIMO EL RESULTADO
+    printf("En decimal es %d\n",nDec);
 }
 
 int decOctal(int numero){
