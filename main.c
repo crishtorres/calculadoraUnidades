@@ -2,66 +2,186 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-
-int decBinario(int);
-int decHexa(int);
-int decOctal(int);
-int binDecimal(char[]);
+//ALUMNO : CRISTIAN TORRES
+void decBinario(char[],char *);
+void decHexa(int);
+void binDecimal(char[],char *);
+void binHexa(char[],char *);
+void digitoHexa(int,char *);
+void digitoBinario(char,char *);
+void hexaBinario(char[],char *);
+void borrarPantalla();
 
 int main(){
-    int   numero = 0;
-    int   opcion = 0;
     int   fEntrada =0;
-    int   nDB=0;
-    char  nHexa;
-    char  nBinario[50];
+    char  nValor[50];
+    char res[50];
+    char res2[50];
+    int ret=0;
+    char respuesta[1];
 
-    printf("Seleccione el formato de entrada : \n1-DECIMAL\n2-BINARIO\n3-HEXADECIMAL\n");
-    scanf("%d",&fEntrada);
+    do{
+        borrarPantalla();
+        printf("Seleccione el formato de entrada : \n[1]-DECIMAL\n[2]-BINARIO\n[3]-HEXADECIMAL\n");
+        scanf("%d",&fEntrada);
+        borrarPantalla();
 
-    switch(fEntrada){
-        case 1: //DECIMAL
-            printf("Ingrese el numero decimal : \n");
-            scanf("%d",&nDB);
-            decBinario(nDB);
-            decHexa(nDB);
-            break;
-        case 2: //BINARIO
-            printf("Ingrese el numero binario : \n");
-            scanf("%s",nBinario);
-            printf("Valor ingresado %s \n",nBinario);
-            binDecimal(nBinario);
-            break;
-        case 3: //HEXADECIMAL
-            printf("Ingrese el numero hexadecimal : \n");
-            scanf("%s",nHexa);
-    }
+        switch(fEntrada){
+            case 1: //DECIMAL
+                printf("Ingrese el numero decimal : \n");
+                scanf("%s",nValor);
 
+                decBinario(nValor,res);
+                printf("El numero %s en Binario es %s \n",nValor,res);
+                binHexa(res,res2);
+                printf("El numero %s en Hexadecimal es %s \n",nValor,res2);
+                break;
+            case 2: //BINARIO
+                printf("Ingrese el numero binario : \n");
+                scanf("%s",nValor);
 
-    printf("Seleccione una de las opciones : \n1-DECIMAL a BINARIO\n2-DECIMAL a HEXADECIMAL\n3-DECIMAL a OCTAL\n");
-    scanf("%d",&opcion);
+                binDecimal(nValor,res2);
+                printf("El numero %s en Decimal es %s \n",nValor,res2);
+                binHexa(nValor,res2);
+                printf("El numero %s en Hexadecimal es %s \n",nValor,res2);
+                break;
+            case 3: //HEXADECIMAL
+                printf("Ingrese el numero hexadecimal : \n");
+                scanf("%s",nValor);
 
-    printf("\nIngrese el numero a convertir:\n");
-    scanf("%d",&numero);
+                hexaBinario(nValor,res);
+                printf("El numero %s en Binario es %s \n",nValor,res);
+                binDecimal(res,res2);
+                printf("El numero %s en Decimal es %s \n",nValor,res2);
+        }
 
-    switch(opcion){
-        case 1: decBinario(numero); break;
-        case 2: decHexa(numero); break;
-        case 3: decOctal(numero); break;
-    }
-    //numero = 5137;
-    //resultado = 155;
-    //decOctal(numero);
+        printf("\nSi desea realizar otra conversion, ingrese s, de lo contrario ingrese n.\n");
+        scanf("%s",respuesta);
+
+        ret = strncmp("s",respuesta,1);
+    }while(ret==0);
 }
 
-int binDecimal(char numero[]){
+void hexaBinario(char numero[],char *pRes){
+
+    int i=0;
+    char longitud;
+    //BLANQUEO LA VARIABLE
+    strcpy(pRes,"");
+    //OBTENGO LA LONGITUD DEL NÚMERO
+    longitud=strlen(numero);
+    //RECORRO EL NÚMERO Y LLAMO A LA FUNCION QUE DEVUELVE EL VALOR BINARIO DE CADA DIGITO
+    for(i=0;i<=longitud;i++){
+        digitoBinario(numero[i],pRes);
+    }
+}
+
+void binHexa(char numero[],char *pRes){
     int i=0, j=0;
     char longitud;
     int nDec=0;
-
+    int resto=0;
+    char nHexa[30];
+    //BLANQUEO LA VARIABLE
+    strcpy(nHexa,"");
     //OBTENGO EL TAMAÑO DEL VECTOR
     longitud=strlen(numero);
 
+    //OBTENGO EL RESTO DE LA LONGITUD/4 PARA SABER SI TENGO QUE AGREGAR 0 PARA COMPLETAR
+    //Y PODER AGRUPAR DE A 4 SIN PROBLEMAS
+    resto = longitud%4;
+    if(resto>0){
+        //DECLARO UNA VARIABLE TEMPORAL DEL TAMAÑO DEL RESTO
+        char tmp[resto];
+        //BLANQUEO LA VARIABLE
+        strcpy(tmp,"");
+        //J TOMA EL VALOR DE LOS 0 QUE TENGO QUE AGREGAR A LA IZQUIERDA
+        j=4-resto;
+        //RECORRO LA CANTIDAD DE 0 Y LOS AGREGO EN LA VARIABLE TEMPORAL
+        for(i=0;i<j;i++){
+            strcat(tmp,"0");
+        }
+        //CONCATENO EN LA VARIABLE TMP EL NUMERO ORIGINAL MÁS LOS 0
+        strcat(tmp,numero);
+        //OBTENGO LA NUEVA LONGITUD
+        longitud=strlen(tmp);
+        //COPIO EL NÚMERO EN LA VARIABLE ORIGINAL
+        strcpy(numero,tmp);
+    }
+
+    //RECORRO LA VARIABLE DE 4 EN 4
+    for(i=0;i<=longitud-1;i+=4){
+        //TOMO EL PRIMERO DE LOS 4 DIGITOS, SI ES 1 SUMO EN UNA VARIABLE LA POTENCIA DE 2 EN LA POSICIÓN DEL NÚMERO
+        //Y HAGO LO MISMO CON LOS SIGUIENTES
+        if(numero[i]=='1'){ nDec+=pow(2,3); }
+        if(numero[i+1]=='1'){ nDec+=pow(2,2); }
+        if(numero[i+2]=='1'){ nDec+=pow(2,1); }
+        if(numero[i+3]=='1'){ nDec+=pow(2,0); }
+
+        //ENVIO A ESTA FUNCIÓN EL NÚMERO OBTENIDO DE LA SUMA Y EL VECTOR DONDE GUARDO EL RESULTADO
+        //Y DEVUELVE EL VALOR HEXADECIMAL DEL MISMO
+        digitoHexa(nDec,nHexa);
+        //REINICIO EL ENTERO PARA PODER USARLO EN LOS PROXIMOS 4 DIGITOS
+        nDec=0;
+    }
+    //IMPRIMO EL RESULTADO
+    strcpy(pRes,nHexa);
+}
+
+void digitoHexa(int num,char *nHexa){
+
+    switch(num){
+        case 1: strcat(nHexa,"1");break;
+        case 2: strcat(nHexa,"2");break;
+        case 3: strcat(nHexa,"3");break;
+        case 4: strcat(nHexa,"4");break;
+        case 5: strcat(nHexa,"5");break;
+        case 6: strcat(nHexa,"6");break;
+        case 7: strcat(nHexa,"7");break;
+        case 8: strcat(nHexa,"8");break;
+        case 9: strcat(nHexa,"9");break;
+        case 10: strcat(nHexa,"A");break;
+        case 11: strcat(nHexa,"B");break;
+        case 12: strcat(nHexa,"C");break;
+        case 13: strcat(nHexa,"D");break;
+        case 14: strcat(nHexa,"E");break;
+        case 15: strcat(nHexa,"F");break;
+    }
+
+}
+
+void digitoBinario(char digito,char *pRes){
+    switch(digito){
+        case '1': strcat(pRes,"0001"); break;
+        case '2': strcat(pRes,"0010"); break;
+        case '3': strcat(pRes,"0011"); break;
+        case '4': strcat(pRes,"0100"); break;
+        case '5': strcat(pRes,"0101"); break;
+        case '6': strcat(pRes,"0110"); break;
+        case '7': strcat(pRes,"0111"); break;
+        case '8': strcat(pRes,"1000"); break;
+        case '9': strcat(pRes,"1001"); break;
+        case 'a':
+        case 'A': strcat(pRes,"1010"); break;
+        case 'b':
+        case 'B': strcat(pRes,"1011"); break;
+        case 'c':
+        case 'C': strcat(pRes,"1100"); break;
+        case 'd':
+        case 'D': strcat(pRes,"1101"); break;
+        case 'e':
+        case 'E': strcat(pRes,"1110"); break;
+        case 'f':
+        case 'F': strcat(pRes,"1111"); break;
+    }
+}
+
+void binDecimal(char numero[],char *pRes){
+    int i=0;
+    char longitud;
+    int nDec=0;
+    //OBTENGO EL TAMAÑO DEL VECTOR
+    longitud=strlen(numero);
     //RECORRO EL VECTOR EN INVERSA
     for(i=longitud-1;i>=0;i--){
         //SI EL CARACTER ENCONTRADO ES 1, ENTONCES ELEVO 2 A LA POTENCIA DE (LONGITUD-1)-i
@@ -70,178 +190,56 @@ int binDecimal(char numero[]){
             nDec+=pow(2,(longitud-1)-i);
         }
     }
-
-    //IMPRIMO EL RESULTADO
-    printf("En decimal es %d\n",nDec);
+    //DECLARO UNA VARIABLE TEMPORAL
+    char str[50];
+    //CONVIERTO EL ENTERO EN TEXTO, PARA PODER DEVOLVERLO EN EL PUNTERO
+    //QUE ES TIPO CHAR
+    sprintf(str, "%d", nDec);
+    strcpy(pRes,str);
 }
 
-int decOctal(int numero){
-    int   resto = 0;
-    int   resultado = 0;
-    char  octal[50];
-    char  longitud;
-    char  temporal;
-    char  tempS[10];
-    int i,j;
-    resultado = numero;
+void decBinario(char numero[],char *pRes){
+    char longitud;
+    char cadena[50];
+    int i=0, num=0, paso=0, potencia=0;
 
-    //BLANQUEO LA CADENA QUE VA A DEVOLVER EL RESULTADO
-    strcpy(octal,"");
-    do{
-        //OBTENGO EL RESTO
-        resto = resultado%8;
-
-        //REALIZO LA DIVISIÓN
-        resultado = resultado / 8;
-
-        //BLANQUEO LA CADENA TEMPORAL
-        strcpy(tempS,"");
-
-        //CONVIERTO EL RESTO EN UNA CADENA PARA PODER CONCATENARLO
-        itoa(resto, tempS, 10);
-        strcat(octal,tempS);
-
-        //REPITO EL PROCESO MIENTRAS EL RESULTADO SEA MAYOR A 8
-    }while(resultado>8);
-
-    //LIMPIO LA CADENA TEMPORAL, CONVIERTO EL ULTIMO RESULTADO A CADENA PARA CONCATENARLO
-    strcpy(tempS,"");
-    itoa(resultado, tempS, 10);
-    strcat(octal,tempS);
-
-    //INVIERTO EL OCTAL PARA DEVOLVERLO CORRECTAMENTE
-    //OBTENGO EL LARGO DE EL NUMERO OCTAL
-    longitud=strlen(octal);
-
-    //RECORRO EL NUMERO OCTAL HASTA LA LONGITUD, Y A LA VEZ LO RECORRO DE ATRAS
-    //HACIA ADELANTE, INTERCAMBIANDO LOS VALORES, ULTIMO POR PRIMERO Y VICEVERSA
-    //Y ASI CON LOS SIGUIENTES
-    for (i=0,j=longitud-1; i<longitud/2; i++,j--){
-        temporal=octal[i];
-        octal[i]=octal[j];
-        octal[j]=temporal;
+    //BLANQUEO LA VARIABLE
+    strcpy(cadena,"");
+    //OBTENGO LOS DIGITOS DEL NUMERO A CONVERTIR, PARA EVITAR RECORRER TANTAS OPCIONES SI NO SON NECESARIAS
+    //POR EJ. SI SE INGRESA UN NUMERO DE 2 DIGITOS,SE QUE NO VA A SER MAYOR A 2^7=128
+    //ENTONCES LE ASIGNO A I EL VALOR MAXIMO DESDE EL CUAL COMIENZA A RECORRER
+    longitud = strlen(numero);
+    switch(longitud){
+        case 1:i=4; break;
+        case 2:i=7; break;
+        case 3:i=10; break;
+        case 4:i=14; break;
+        case 5:i=17;break;
+        default:i=40; break;
     }
 
-    printf("El numero %d en octal es %s\n",numero,octal);
-}
-
-int decHexa(int numero){
-    int resultado;
-    float resDecimal;
-    char  hexa[50];
-    int temp=0;
-    char tempS[10];
-    char  longitud;
-    char  temporal;
-    int i,j;
-
-    resultado = numero;
-    strcpy(hexa,"");
-    strcpy(tempS,"");
-    do{
-        resDecimal = (resultado+0.0) / 16;
-        resultado = resultado / 16;
-        resDecimal = resDecimal-resultado;
-        temp = resDecimal*16;
-
-        strcpy(tempS,"");
-        if(temp<10){
-            itoa(temp, tempS, 10);
-            strcat(hexa,tempS);
-        }else if(temp==10){
-            strcat(hexa,"A");
-        }else if(temp==11){
-            strcat(hexa,"B");
-        }else if(temp==12){
-            strcat(hexa,"C");
-        }else if(temp==13){
-            strcat(hexa,"D");
-        }else if(temp==14){
-            strcat(hexa,"E");
-        }else if(temp==15){
-            strcat(hexa,"F");
-        }
-
-        //printf("Resultado %d , Resultado Decimal %.3f, Temporal %d, Temp String %s\n",resultado,resDecimal,temp,tempS);
-
-    }while(resultado>16);
-
-    strcpy(tempS,"");
-    if(resultado<10){
-        itoa(resultado, tempS, 10);
-        strcat(hexa,tempS);
-    }else if(resultado==10){
-        strcat(hexa,"A");
-    }else if(resultado==11){
-        strcat(hexa,"B");
-    }else if(resultado==12){
-        strcat(hexa,"C");
-    }else if(resultado==13){
-        strcat(hexa,"D");
-    }else if(resultado==14){
-        strcat(hexa,"E");
-    }else if(resultado==15){
-        strcat(hexa,"F");
-    }
-    longitud=strlen(hexa);
-
-    for (i=0,j=longitud-1; i<longitud/2; i++,j--){
-        temporal=hexa[i];
-        hexa[i]=hexa[j];
-        hexa[j]=temporal;
-    }
-
-    printf("El numero %d en hexadecimal es %s\n",numero,hexa);
-}
-
-int decBinario(int numero){
-    int   resto = 0;
-    int   resultado = 0;
-    char  binario[50];
-    char  longitud;
-    char  temporal;
-    int i,j;
-    resultado = numero;
-
-    //BLANQUEO LA CADENA QUE VA A DEVOLVER EL RESULTADO
-    strcpy(binario,"");
-    do{
-        //OBTENGO EL RESTO
-        resto = resultado%2;
-
-        //REALIZO LA DIVISIÓN
-        resultado = resultado / 2;
-        //printf("Resto %d , Resultado %d\n",resto,resultado);
-
-        //EVALUO EL RESTO PARA DETERMINAR SI ES 1 O 0 Y LUEGO CONCATENARLO A LA VARIABLE A IMPRIMIR
-        if(resto==1){
-            strcat(binario,"1");
+    //CONVIERTO LA CADENA A ENTERO PARA PODER APLICARLE OPERACIONES
+    num = atoi(numero);
+    //RECORRO LAS POTENCIAS DE 2, ARRANCANDO DESDE EL LIMITE QUE ESTABLECI CON I
+    //OBTENGO EL VALOR DE LA POTENCIA EN ESA POSICION, LA COMPARO CON EL NUMERO Y SI ES MENOR, ENTONCES PONGO UN 1
+    //EN LA VARIABLE CADENA, E INICIALIZO PASO, PARA SABER QUE PUEDO COMENZAR A PONER 0 EN CASO DE NO CUMPLIR LA CONDICION
+    //Y ASI EVITAR LOS 0 A LA IZQUIERDA. LUEGO RESTO AL NUMERO EL VALOR DE LA POTENCIA, Y REPITO EL PROCESO.
+    for(i=i;i>=0;i--){
+        potencia=pow(2,i);
+        if(potencia>num){
+            if(paso==1){
+                strcat(cadena,"0");
+            }
         }else{
-            strcat(binario,"0");
+            paso=1;
+            num-=potencia;
+            strcat(cadena,"1");
         }
-        //REPITO EL PROCESO MIENTRAS EL RESULTADO SEA MAYOR A 1
-    }while(resultado>1);
-
-    //EVALUO EL RESULTADO PARA DETERMINAR SI ES 1 O 0 Y LUEGO CONCATENARLO A LA VARIABLE A IMPRIMIR
-    if(resultado==1){
-        strcat(binario,"1");
-    }else{
-        strcat(binario,"0");
     }
+    //COPIO EN UNA VARIABLE EL RESULTADO PARA PODER USARLO DESDE OTRA FUNCION
+    strcpy(pRes,cadena);
+}
 
-    //INVIERTO EL BINARIO PARA DEVOLVERLO CORRECTAMENTE
-    //OBTENGO EL LARGO DE EL NUMERO BINARIO
-    longitud=strlen(binario);
-
-    //RECORRO EL NUMERO BINARIO HASTA LA LONGITUD, Y A LA VEZ LO RECORRO DE ATRAS
-    //HACIA ADELANTE, INTERCAMBIANDO LOS VALORES, ULTIMO POR PRIMERO Y VICEVERSA
-    //Y ASI CON LOS SIGUIENTES
-    for (i=0,j=longitud-1; i<longitud/2; i++,j--){
-        temporal=binario[i];
-        binario[i]=binario[j];
-        binario[j]=temporal;
-    }
-
-    printf("El numero %d en binario es %s\n",numero,binario);
-
+void borrarPantalla(){
+	system("cls");
 }
