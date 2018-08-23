@@ -63,16 +63,25 @@ int main(){
 }
 
 void hexaBinario(char numero[],char *pRes){
-
     int i=0;
     char longitud;
+    int paso=0;
     //BLANQUEO LA VARIABLE
     strcpy(pRes,"");
     //OBTENGO LA LONGITUD DEL NÚMERO
     longitud=strlen(numero);
     //RECORRO EL NÚMERO Y LLAMO A LA FUNCION QUE DEVUELVE EL VALOR BINARIO DE CADA DIGITO
-    for(i=0;i<=longitud;i++){
-        digitoBinario(numero[i],pRes);
+    for(i=0;i<=longitud-1;i++){
+        if(numero[i]=='0'){
+            if(paso==1){
+                digitoBinario(numero[i],pRes);
+            }
+        }else{
+            //CUANDO TOMO EL PRIMER VALOR DISTINTO DE 0, INICIALIZO LA VARIABLE PASO PARA QUE
+            //NO ME AGREGUE LOS 0 A LA IZQUIERDA INNECESARIOS
+            paso=1;
+            digitoBinario(numero[i],pRes);
+        }
     }
 }
 
@@ -131,6 +140,7 @@ void binHexa(char numero[],char *pRes){
 void digitoHexa(int num,char *nHexa){
 
     switch(num){
+        case 0: strcat(nHexa,"0");break;
         case 1: strcat(nHexa,"1");break;
         case 2: strcat(nHexa,"2");break;
         case 3: strcat(nHexa,"3");break;
@@ -152,6 +162,7 @@ void digitoHexa(int num,char *nHexa){
 
 void digitoBinario(char digito,char *pRes){
     switch(digito){
+        case '0': strcat(pRes,"0000"); break;
         case '1': strcat(pRes,"0001"); break;
         case '2': strcat(pRes,"0010"); break;
         case '3': strcat(pRes,"0011"); break;
